@@ -7,11 +7,20 @@ This is a simple GUI library for Bukkit plugins. It allows you to create GUIs wi
 To use this library, you need to add it as a dependency in your pom.xml file:
 
 ```xml
-<dependency>
-    <groupId>me.legofreak107</groupId>
-    <artifactId>GuiLibrary</artifactId>
-    <version>1.0.0</version>
-</dependency>
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+	    <groupId>com.github.legofreak107</groupId>
+	    <artifactId>GuiLibrary</artifactId>
+	    <version>1.0.0</version>
+	</dependency>
+</dependencies>
 ```
 
 Then, you need to initialize the library in your main class:
