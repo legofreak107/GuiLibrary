@@ -72,8 +72,7 @@ public class GuiMenu {
         init(layout, itemMasks, Component.text(title), closeHandler);
     }
 
-    public void open(Player player, Consumer<InventoryCloseEvent> closeHandler) {
-        this.closeHandler = closeHandler;
+    public void open(Player player) {
         player.openInventory(inventory);
         GuiLibrary.menusOpen.put(player, this);
     }
