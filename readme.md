@@ -18,7 +18,7 @@ To use this library, you need to add it as a dependency in your pom.xml file:
     <dependency>
 	    <groupId>com.github.legofreak107</groupId>
 	    <artifactId>GuiLibrary</artifactId>
-	    <version>1.0.0</version>
+	    <version>1.0.4</version>
 	</dependency>
 </dependencies>
 ```
