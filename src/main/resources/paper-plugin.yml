@@ -1,0 +1,4 @@
+name: GuiLibrary
+version: '1.0-SNAPSHOT'
+main: me.legofreak107.guilibrary.GuiLibrary
+api-version: '1.21'
