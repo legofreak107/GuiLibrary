@@ -1,19 +1,19 @@
-package me.legofreak107.sx.sxcore.libraries.inventory;
+package me.legofreak107.guilibrary.gui;
 
-import lombok.Getter;
-import lombok.Setter;
-import me.legofreak107.sx.sxcore.SXCore;
-import me.legofreak107.sx.sxcore.exceptions.InvalidGuiLayoutException;
-import me.legofreak107.sx.sxcore.modules.usermodule.objects.SXUser;
+import me.legofreak107.guilibrary.GuiLibrary;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.function.Consumer;
 
-@Getter
-@Setter
 public class GuiMenu {
 
     private Inventory inventory;
@@ -26,24 +26,37 @@ public class GuiMenu {
             {0,0,0,0,0,0,0,0,0},
     };
 
-    private boolean locked = true;
-    private String title;
     private HashMap<Integer, GuiItem> itemMasks = new HashMap<>();
     private HashMap<Integer, GuiItem> linkedItems = new HashMap<>();
+    private Consumer<InventoryCloseEvent> closeHandler;
+    private boolean locked = false;
 
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
 
-    private GuiMenuCallback callback;
+    public boolean isLocked() {
+        return locked;
+    }
 
-    public void init(int[][] layout, HashMap<Integer, GuiItem> itemMasks, Component title) {
+    public HashMap<Integer, GuiItem> getLinkedItems() {
+        return linkedItems;
+    }
+
+    public Consumer<InventoryCloseEvent> getCloseHandler() {
+        return closeHandler;
+    }
+
+    public void init(int[][] layout, HashMap<Integer, GuiItem> itemMasks, Component title, Consumer<InventoryCloseEvent> closeHandler) throws InvalidGuiLayoutException {
         this.layout = layout;
         this.itemMasks = itemMasks;
+        this.closeHandler = closeHandler;
         inventory = Bukkit.createInventory(null, layout.length * 9, title);
         int rowNumber = 0;
         for (int[] row : layout) {
             int slotNumber = 0;
             if (row.length != 9) {
-                SXCore.getPluginLogger().severe(new InvalidGuiLayoutException().getMessage());
-                continue;
+                throw new InvalidGuiLayoutException();
             }
             for (int value : row) {
                 int slot = (rowNumber * 9) + slotNumber;
@@ -55,45 +68,13 @@ public class GuiMenu {
         }
     }
 
-    public void init(int[][] layout, HashMap<Integer, GuiItem> itemMasks, String title) {
-        this.layout = layout;
-        this.itemMasks = itemMasks;
-        this.title = title;
-        inventory = Bukkit.createInventory(null, layout.length * 9, Component.text(title));
-        int rowNumber = 0;
-        for (int[] row : layout) {
-            int slotNumber = 0;
-            if (row.length != 9) {
-                SXCore.getPluginLogger().severe(new InvalidGuiLayoutException().getMessage());
-                continue;
-            }
-            for (int value : row) {
-                int slot = (rowNumber * 9) + slotNumber;
-                inventory.setItem(slot, itemMasks.get(value).getItemStack());
-                linkedItems.put(slot, itemMasks.get(value));
-                slotNumber ++;
-            }
-            rowNumber ++;
-        }
+    public void init(int[][] layout, HashMap<Integer, GuiItem> itemMasks, String title, Consumer<InventoryCloseEvent> closeHandler) throws InvalidGuiLayoutException {
+        init(layout, itemMasks, Component.text(title), closeHandler);
     }
 
-    public void open(GuiMenuCallback callback, SXUser player) {
-        this.callback = callback;
-        GuiMenu menu = this;
-        try {
-            new BukkitRunnable(){
-                @Override
-                public void run() {
-                    if (player.getCurOpenGui() != null) {
-                        player.getCurOpenGui().getCallback().cancel(player);
-                        player.getPlayer().closeInventory();
-                    }
-                    player.setCurOpenGui(menu);
-                    player.getPlayer().openInventory(inventory);
-                }
-            }.runTask(SXCore.getInstance());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void open(Player player, Consumer<InventoryCloseEvent> closeHandler) {
+        this.closeHandler = closeHandler;
+        player.openInventory(inventory);
+        GuiLibrary.menusOpen.put(player, this);
     }
 }

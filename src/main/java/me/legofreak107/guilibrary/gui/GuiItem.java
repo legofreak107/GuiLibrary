@@ -1,19 +1,26 @@
-package me.legofreak107.sx.sxcore.libraries.inventory;
+package me.legofreak107.guilibrary.gui;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.kyori.adventure.text.Component;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.function.Consumer;
+
 public class GuiItem {
 
     private ItemStack itemStack;
-    private GuiItemCallback callback;
+    private Consumer<InventoryClickEvent> clickHandler;
 
+    public ItemStack getItemStack() {
+        return itemStack;
+    }
+
+    public Consumer<InventoryClickEvent> getClickHandler() {
+        return clickHandler;
+    }
+
+    public GuiItem(ItemStack itemStack, Consumer<InventoryClickEvent> clickHandler) {
+        this.itemStack = itemStack;
+        this.clickHandler = clickHandler;
+    }
 }
